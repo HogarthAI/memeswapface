@@ -41,19 +41,20 @@ jobs:
       - name: Build Docker image
         run: docker build -t memfaceswap .
 
-      - name: Install dev requirements (for tests)
+      - name: Install prod requirements
+        run: pip install -r requirements.txt
+
+      - name: Install dev requirements
         run: pip install -r requirements-dev.txt
 
-      - name: Run tests in Docker
-        run: |
-          docker run \
-            --env POSTGRES_DB=$POSTGRES_DB \
-            --env POSTGRES_USER=$POSTGRES_USER \
-            --env POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
-            --env POSTGRES_HOST=$POSTGRES_HOST \
-            --env POSTGRES_PORT=$POSTGRES_PORT \
-            --env MAXSTUDIO_API_KEY=$MAXSTUDIO_API_KEY \
-            --env IMGBB_API_KEY=$IMGBB_API_KEY \
-            --env BOT_TOKEN=$BOT_TOKEN \
-            -v $(pwd):/app \
-            memfaceswap pytest
+      - name: Run tests
+        env:
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+          POSTGRES_HOST: ${{ env.POSTGRES_HOST }}
+          POSTGRES_PORT: ${{ env.POSTGRES_PORT }}
+          MAXSTUDIO_API_KEY: ${{ env.MAXSTUDIO_API_KEY }}
+          IMGBB_API_KEY: ${{ env.IMGBB_API_KEY }}
+          BOT_TOKEN: ${{ env.BOT_TOKEN }}
+        run: pytest
