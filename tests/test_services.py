@@ -17,7 +17,7 @@ class TestFaceApi:
         with patch("src.services.face_api.requests.post") as mock_post:
             mock_resp = MagicMock()
             mock_resp.raise_for_status.return_value = None
-            mock_resp.json.return_value = {"result_url": "https://result.url/img.webp"}
+            mock_resp.json.return_value = {"result": {"mediaUrl": "https://result.url/img.webp"}}
             mock_post.return_value = mock_resp
             url = face_api.swap_face_file("https://meme.url/meme.png", str(dummy_photo), "APIKEY")
             assert url == "https://result.url/img.webp"
@@ -36,7 +36,7 @@ class TestFaceApi:
         with patch("src.services.face_api.requests.get") as mock_get:
             mock_resp = MagicMock()
             mock_resp.status_code = 200
-            mock_resp.json.return_value = {"url": "https://result.url/img.webp"}
+            mock_resp.json.return_value = {"status": "completed", "result": {"mediaUrl": "https://result.url/img.webp"}}
             mock_get.return_value = mock_resp
             url = face_api.poll_job_status("jobid", "APIKEY", timeout=1)
             assert url == "https://result.url/img.webp"
@@ -46,8 +46,8 @@ class TestFaceApi:
             mock_resp = MagicMock()
             mock_resp.status_code = 404
             mock_get.return_value = mock_resp
-            url = face_api.poll_job_status("jobid", "APIKEY", timeout=2)
-            assert url is None
+            with pytest.raises(TimeoutError):
+                face_api.poll_job_status("jobid", "APIKEY", timeout=2)
 
     def test_upload_to_imgbb_success(self):
         with patch("src.services.face_api.requests.post") as mock_post:
@@ -70,10 +70,10 @@ class TestFaceApi:
         with patch("src.services.face_api.requests.post") as mock_post:
             mock_resp = MagicMock()
             mock_resp.raise_for_status.return_value = None
-            mock_resp.json.return_value = {"faces": ["face1"]}
+            mock_resp.json.return_value = {"detectedFaces": ["face1"]}
             mock_post.return_value = mock_resp
             result = face_api.detect_face("http://img.url", "APIKEY")
-            assert result["faces"] == ["face1"]
+            assert result == ["face1"]
 
     def test_detect_face_fail(self):
         with patch("src.services.face_api.requests.post") as mock_post:
@@ -89,7 +89,7 @@ class TestFaceApi:
         with patch("src.services.face_api.requests.post") as mock_post:
             mock_resp = MagicMock()
             mock_resp.raise_for_status.return_value = None
-            mock_resp.json.return_value = {"job_id": "test_job_id"}
+            mock_resp.json.return_value = {"jobId": "test_job_id"}
             mock_post.return_value = mock_resp
             job_id = face_api.swap_face("https://meme.url/meme.png", {"face": "data"}, "APIKEY")
             assert job_id == "test_job_id"
