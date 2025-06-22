@@ -23,6 +23,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 
 # Copy project
 COPY . .
+RUN chmod +x scripts/entrypoint.sh
 
 # Set environment variables (override in production)
 ENV PYTHONUNBUFFERED=1 \
@@ -32,4 +33,4 @@ ENV PYTHONUNBUFFERED=1 \
 # EXPOSE 8080
 
 # Default command
-CMD ["python", "src/main.py"]
+CMD ["sh", "scripts/entrypoint.sh"]

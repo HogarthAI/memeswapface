@@ -15,7 +15,9 @@ services:
 
   app:
     build: .
-    command: ["python", "src/main.py"]
+    restart: always
+    depends_on:
+      - db
     environment:
       PYTHONUNBUFFERED: 1
       PYTHONDONTWRITEBYTECODE: 1
@@ -28,8 +30,7 @@ services:
       MAXSTUDIO_API_KEY: ${MAXSTUDIO_API_KEY}
       IMGBB_API_KEY: ${IMGBB_API_KEY}
       BOT_TOKEN: ${BOT_TOKEN}
-    depends_on:
-      - db
+    command: ["sh", "scripts/entrypoint.sh"]
     volumes:
       - .:/app
 
