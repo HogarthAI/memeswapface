@@ -1,0 +1,3 @@
+# Script to create DB. Copy from recalldev for parity.
+# All comments must be in English.
+# ... (actual script content should be copied from recalldev/scripts/create_db.py) ...

@@ -1,0 +1,7 @@
+[run]
+omit =
+    */telegram_rest_mvc/*
+
+[report]
+omit =
+    */telegram_rest_mvc/*

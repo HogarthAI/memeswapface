@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: memfaceswap
+          POSTGRES_USER: memfaceswap
+          POSTGRES_PASSWORD: memfaceswap
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U memfaceswap" --health-interval 10s --health-timeout 5s --health-retries 5
+    env:
+      POSTGRES_DB: memfaceswap
+      POSTGRES_USER: memfaceswap
+      POSTGRES_PASSWORD: memfaceswap
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+      MAXSTUDIO_API_KEY: dummy
+      IMGBB_API_KEY: dummy
+      BOT_TOKEN: dummy
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build Docker image
+        run: docker build -t memfaceswap .
+
+      - name: Run tests in Docker
+        run: |
+          docker run \
+            --env POSTGRES_DB=$POSTGRES_DB \
+            --env POSTGRES_USER=$POSTGRES_USER \
+            --env POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
+            --env POSTGRES_HOST=$POSTGRES_HOST \
+            --env POSTGRES_PORT=$POSTGRES_PORT \
+            --env MAXSTUDIO_API_KEY=$MAXSTUDIO_API_KEY \
+            --env IMGBB_API_KEY=$IMGBB_API_KEY \
+            --env BOT_TOKEN=$BOT_TOKEN \
+            memfaceswap pytest

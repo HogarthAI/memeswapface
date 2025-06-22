@@ -1,0 +1,3 @@
+# Script to drop DB. Copy from recalldev for parity.
+# All comments must be in English.
+# ... (actual script content should be copied from recalldev/scripts/drop_db.py) ...
