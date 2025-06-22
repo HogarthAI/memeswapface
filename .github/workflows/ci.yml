@@ -41,6 +41,9 @@ jobs:
       - name: Build Docker image
         run: docker build -t memfaceswap .
 
+      - name: Install dev requirements (for tests)
+        run: pip install -r requirements-dev.txt
+
       - name: Run tests in Docker
         run: |
           docker run \
@@ -52,4 +55,5 @@ jobs:
             --env MAXSTUDIO_API_KEY=$MAXSTUDIO_API_KEY \
             --env IMGBB_API_KEY=$IMGBB_API_KEY \
             --env BOT_TOKEN=$BOT_TOKEN \
+            -v $(pwd):/app \
             memfaceswap pytest
