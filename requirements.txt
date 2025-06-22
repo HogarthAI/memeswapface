@@ -6,10 +6,5 @@ pydantic-settings
 pytest
 python-dotenv==1.0.1
 requests
-<<<<<<< HEAD
-=======
 Pillow
 psycopg2-binary
-
->>>>>>> 7eb7720 (Add requests to requirements)
-
